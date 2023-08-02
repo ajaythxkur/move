@@ -1,0 +1,16 @@
+[package]
+name = 'msg_store'
+version = '1.0.0'
+authors = []
+
+[addresses]
+std = "0x1"
+my_addrx = "02b97d9f48f43a426fb5dbdc9818b0d0c60471f1f3a1040e16a78e01925c9d67"
+
+[dev-addresses]
+[dependencies.AptosFramework]
+git = 'https://github.com/aptos-labs/aptos-core.git'
+rev = 'mainnet'
+subdir = 'aptos-move/framework/aptos-framework'
+
+[dev-dependencies]
