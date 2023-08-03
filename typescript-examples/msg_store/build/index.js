@@ -23,10 +23,11 @@ function main() {
         console.log(`alice found 1 apt in garden!!`);
         const entryFunctionPayload = new aptos_1.TxnBuilderTypes.TransactionPayloadEntryFunction(aptos_1.TxnBuilderTypes.EntryFunction.natural(`${moduleAddress}::msg_store`, "create_message", [], [aptos_1.BCS.bcsSerializeStr("read aptos.dev")]));
         const rawTxn = yield provider.generateSignSubmitTransaction(alice, entryFunctionPayload);
-        console.log('alice stored a message on aptos blockchain with txhash =>' + rawTxn);
+        console.log('alice is waiting for txn to complete');
+        yield provider.waitForTransaction(rawTxn);
         const payload = {
             function: `${moduleAddress}::msg_store::get_message`,
-            type_arguments: ["0x1::string::String"],
+            type_arguments: [],
             arguments: [],
         };
         const message = yield provider.view(payload);

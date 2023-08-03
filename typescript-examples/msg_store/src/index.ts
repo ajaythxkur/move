@@ -15,10 +15,11 @@ async function main(){
     );
       
     const rawTxn = await provider.generateSignSubmitTransaction(alice, entryFunctionPayload);
-    console.log('alice stored a message on aptos blockchain with txhash =>'+rawTxn);
+    console.log('alice is waiting for txn to complete');
+    await provider.waitForTransaction(rawTxn)
     const payload = {
         function: `${moduleAddress}::msg_store::get_message`,
-        type_arguments: ["0x1::string::String"],
+        type_arguments: [],
         arguments: [],
     };
     const message = await provider.view(payload);

@@ -1,11 +1,11 @@
 [package]
-name = 'MultiSender'
+name = 'multi_sender'
 version = '1.0.0'
 authors = []
 
 [addresses]
 std="0x1"
-my_addrx="0x123"
+my_addrx="c274ad80a03f026b8f2b33e72f7c53a06aefa52285700464566d62e2b64ed09b"
 
 [dev-addresses]
 
