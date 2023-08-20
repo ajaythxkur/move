@@ -1,12 +1,11 @@
 [package]
-name = 'exe'
+name = 'todolist'
 version = '1.0.0'
 authors = []
 
 [addresses]
-my_addrx='0x123'
-std='0x1'
-
+my_addrx="0x123"
+std="0x1"
 
 [dependencies.AptosFramework]
 git = 'https://github.com/aptos-labs/aptos-core.git'
