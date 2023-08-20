@@ -1,0 +1,20 @@
+.footermain{
+
+}
+.footerbox{
+    text-align: center;
+}
+.footerbtn{
+
+}
+.footertext{
+    user-select: none;
+    font-family: cubano !important;
+    color: var(--text-gray) !important;
+}
+.footersvg{
+    transition: all .2s ease;
+}
+.footersvg:hover{
+    fill: var(--text-blue);
+}
