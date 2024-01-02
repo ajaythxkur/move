@@ -1,0 +1,1 @@
+aptos move document --help
