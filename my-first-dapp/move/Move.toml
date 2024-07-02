@@ -1,10 +1,10 @@
 [package]
-name = "move"
+name = "my_todo_list"
 version = "1.0.0"
 authors = []
 
 [addresses]
-my_addrx='0x1234'
+todolist_addr='bbfe48a769918ef5d3f70add902e241a0b1813a5b579cfc04a525b3aa383d47e'
 
 [dev-addresses]
 
