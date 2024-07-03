@@ -1,0 +1,65 @@
+module my_addr::object_playgound{
+    use std::signer;
+    use aptos_framework::object::{Self,Object};
+    use std::string::{Self,String};
+
+    #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+    struct MyStruct has key{
+        num: u8
+    }
+
+    #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+    struct ObjectController has key{
+        extend_ref: object::ExtendRef
+    }
+
+    #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+    struct Message has key{
+        message: String
+    }
+    // const NAME: vector<u8> = b"MyObject";
+    const ENOT_OWNER:u64 = 1;
+    const ENOT_PUBLISHER:u64 = 2;
+    // This type is deletable and has a random address.
+    entry fun create_normal_object(caller: &signer){
+        let caller_address = signer::address_of(caller);
+        let constructor_ref = object::create_object(caller_address);
+        let object_signer = object::generate_signer(&constructor_ref);
+        move_to(&object_signer, MyStruct{ num: 0 });
+        let extend_ref = object::generate_extend_ref(&constructor_ref);
+        move_to(&object_signer, ObjectController{ extend_ref });
+    }
+
+    entry fun add_message(
+        caller: &signer,
+        object: Object<MyStruct>,
+        message: String
+    ) acquires ObjectController{
+        let caller_address = signer::address_of(caller);
+        assert!(object::is_owner(object, caller_address), ENOT_OWNER);
+        assert!(caller_address == @my_addr, ENOT_PUBLISHER);
+        let object_address = object::object_address(object);
+        let extend_ref = borrow_global<ObjectController>(object_address).extend_ref;
+        let object_signer = object::generate_signer_for_extending(&extend_ref);
+        move_to(object_signer, Message { message });
+    }
+
+    // // This type is not deletable and has a deterministic address. PDA in SOLANA
+    // entry fun create_named_object(caller: &signer){
+    //     let caller_address = signer::address_of(caller);
+    //     let constructor_ref = object::create_named_object(caller, NAME);
+    // }
+
+    // #[view]
+    // fun has_object(creator:address): bool{
+    //     let object_address = object::create_object_address(&creator, NAME);
+    //     object_exists<0x1::object::ObjectCore>(object_address)
+    // }
+
+    // // This type is not deletable and has a random address.
+    // entry fun create_sticky_object(caller: &signer){
+    //     let caller_address = signer::address_of(caller);
+    //     let constructor_ref = object::create_sticky_object(caller_address);
+    // }
+
+}
