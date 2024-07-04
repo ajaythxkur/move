@@ -96,8 +96,6 @@ export function Actions({ selectedAction, setSelectedAction }: ActionProps) {
             toast.success(`Thanks for playing with your pet, ${pet?.name}!`);
         }
     }
-    console.log(pet);
-    
 
     return (
         <div className="nes-container with-title flex-1 bg-white h-[320px]">

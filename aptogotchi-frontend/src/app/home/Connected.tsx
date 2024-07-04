@@ -7,7 +7,7 @@ import { Mint } from "./Mint";
 import { Modal } from "@/components/Modal";
 import { usePet } from "@/context/PetContext";
 import { Pet } from "./Pet";
-const DEVNET_ID = "142";
+const TESTNET_ID = "2";
 const aptosClient = getAptosClient();
 export function Connected() {
     const { account, network } = useWallet();
@@ -50,7 +50,7 @@ export function Connected() {
     }, [account?.address, fetchPet, network])
     return (
         <div className="flex flex-col gap-3 p-3">
-            {network?.chainId !== DEVNET_ID && <Modal />}
+            {network?.chainId !== TESTNET_ID && <Modal />}
             {pet ? <Pet /> : <Mint fetchPet={fetchPet}/>}
         </div>
     )
