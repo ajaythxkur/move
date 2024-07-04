@@ -2,17 +2,48 @@
 
 import { HealthBar } from "@/components/HealthBar";
 import { usePet } from "@/context/PetContext"
+import { ABI } from "@/utils/abi";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useState } from "react";
 import { AiFillSave } from "react-icons/ai";
 import { FaCopy, FaExternalLinkAlt } from "react-icons/fa";
+import { toast } from "sonner";
+import { getAptosClient } from "@/utils/aptosClient";
 
+const aptosClient = getAptosClient();
 export function PetDetails(){
     const { pet, setPet } = usePet();
     const [newName, setNewName] = useState<string>(pet?.name || "");
     const canSave = newName !== pet?.name;
     const { account, network, signAndSubmitTransaction } = useWallet();
     const owner = account?.ansName ? `${account?.ansName}.apt` : account?.address || "";
+
+    const handleNameChange = async() => {
+        if(!account || !network) return;
+
+        try{
+            const response = await signAndSubmitTransaction({
+                sender: account.address,
+                data: {
+                    function: `${ABI.address}::main::set_name`,
+                    typeArguments: [],
+                    functionArguments: [newName]
+                }
+            });
+            await aptosClient.waitForTransaction({ transactionHash: response.hash });
+            setPet((pet)=>{
+                if(!pet) return pet;
+                return { ...pet, name: newName }
+            });
+        }catch(error: any){
+            console.error(error)
+            toast.error("Failed to update name. Please try again.")
+        }
+    } 
+    const handleCopyOwnerAddrOrName = () => {
+        navigator.clipboard.writeText(owner);
+        toast.success("Owner address copied to clipboard.")
+    }
     const nameFieldComponent = (
         <div className="nes-field">
           <label htmlFor="name_field">Name</label>
@@ -27,7 +58,7 @@ export function PetDetails(){
             <button
               className="absolute right-4 top-1/2 -translate-y-1/2 nes-pointer disabled:cursor-not-allowed text-sky-500 disabled:text-gray-400"
               disabled={!canSave}
-            //   onClick={handleNameChange}
+              onClick={handleNameChange}
             >
               <AiFillSave className=" h-8 w-8 drop-shadow-sm" />
             </button>
@@ -57,7 +88,7 @@ export function PetDetails(){
             />
             <button
               className="absolute right-4 top-1/2 -translate-y-1/2 nes-pointer disabled:cursor-not-allowed text-gray-400 disabled:text-gray-400"
-            //   onClick={handleCopyOwnerAddrOrName}
+              onClick={handleCopyOwnerAddrOrName}
             >
               <FaCopy className="h-8 w-8 drop-shadow-sm" />
             </button>

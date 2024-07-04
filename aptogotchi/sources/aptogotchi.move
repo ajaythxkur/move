@@ -183,7 +183,43 @@ module aptogotchi_addr::main{
         (gotchi.name, gotchi.birthday, gotchi.energy_points, gotchi.parts)
     }
 
-    // public entry fun set_name(user_addr: address, name: String) acquires Aptogotchi, CollectionCapability{
+    public entry fun set_name(owner: signer, name: String) acquires AptoGotchi{
+        let owner_addr = signer::address_of(&owner);
+        assert!(has_aptogotchi(owner_addr), error::unavailable(ENOT_AVAILABLE));
+        assert!(string::length(&name) <= NAME_UPPER_BOUND, error::invalid_argument(ENAME_LIMIT));
+        let token_address = get_aptogotchi_address(owner_addr);
+        let gotchi = borrow_global_mut<AptoGotchi>(token_address);
+        gotchi.name = name;
+    }
 
-    // }
+    public entry fun feed(owner: &signer, points: u64) acquires AptoGotchi{
+        let owner_addr = signer::address_of(owner);
+        assert!(has_aptogotchi(owner_addr), error::unavailable(ENOT_AVAILABLE));
+        let token_address = get_aptogotchi_address(owner_addr);
+        let gotchi = borrow_global_mut<AptoGotchi>(token_address);
+        gotchi.energy_points = if(gotchi.energy_points + points > ENERGY_UPPER_BOUND){
+            ENERGY_UPPER_BOUND
+        }else{
+            gotchi.energy_points + points
+        };
+    }
+
+    public entry fun play(owner: &signer, points: u64) acquires AptoGotchi{
+        let owner_addr = signer::address_of(owner);
+        assert!(has_aptogotchi(owner_addr), error::unavailable(ENOT_AVAILABLE));
+        let token_address = get_aptogotchi_address(owner_addr);
+        let gotchi = borrow_global_mut<AptoGotchi>(token_address);
+        gotchi.energy_points = if(gotchi.energy_points < points){
+            0
+        }else{
+            gotchi.energy_points - points
+        }
+    }
+
+    #[view]
+    public fun get_aptogotchi_collection_address(): (address){
+        let collection_name = string::utf8(APTOGOTCHI_COLLECTION_NAME);
+        let creator_addr = get_app_signer_addr();
+        collection::create_collection_address(&creator_addr, &collection_name)
+    }
 }

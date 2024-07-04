@@ -1,6 +1,10 @@
 import { usePet } from "@/context/PetContext";
 import { PetImage } from "./PetImage";
 import { PetDetails } from "./Details";
+import { Summary } from "./Summary";
+import { useState } from "react";
+import { Actions, PetAction } from "./Actions";
+import { AptogotchiCollection } from "@/components/AptogotchiCollection";
 
 export interface Pet{
     name: string;
@@ -25,27 +29,27 @@ export const DEFAULT_PET = {
 
 export function Pet(){
     const { pet, setPet } = usePet();
-    
+    const [selectedAction, setSelectedAction] = useState<PetAction>("play")
     return (
         <div className="flex flex-col self-center m-2 sm:m-10">
         <div className="flex flex-col sm:flex-row self-center gap-4 sm:gap-12">
           <div className="flex flex-col gap-2 sm:gap-4 sm:w-[360px] m-auto">
             <PetImage
-            //   selectedAction={selectedAction}
+              selectedAction={selectedAction}
               petParts={pet?.parts}
-            //   avatarStyle
+              avatarStyle
             />
             <PetDetails />
           </div>
           <div className="flex flex-col gap-2 sm:gap-8 sm:w-[680px] h-full">
-            {/* <Actions
+            <Actions
               selectedAction={selectedAction}
               setSelectedAction={setSelectedAction}
             />
-            <Summary /> */}
+            <Summary />
           </div>
         </div>
-        {/* <AptogotchiCollection /> */}
+        <AptogotchiCollection />
       </div>
     )
 }

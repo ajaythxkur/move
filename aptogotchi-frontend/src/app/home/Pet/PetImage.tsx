@@ -1,14 +1,15 @@
 "use client"
 
 import { PetParts } from ".";
+import { PetAction } from "./Actions";
 
 export interface PetImageProps {
-    petParts: PetParts | undefined
+    selectedAction?: PetAction
+    petParts: PetParts | undefined,
+    avatarStyle?: boolean
 }
 export function PetImage(props: PetImageProps) {
-    const { petParts } = props;
-    let avatarStyle;
-    let selectedAction;
+    const { petParts, selectedAction, avatarStyle } = props;
 
     if (!petParts) return <div className="h-80 w-80 bg-gray-200"></div>;
     const head = BASE_PATH + "head.png";
