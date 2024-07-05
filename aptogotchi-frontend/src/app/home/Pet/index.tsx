@@ -2,9 +2,10 @@ import { usePet } from "@/context/PetContext";
 import { PetImage } from "./PetImage";
 import { PetDetails } from "./Details";
 import { Summary } from "./Summary";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Actions, PetAction } from "./Actions";
 import { AptogotchiCollection } from "@/components/AptogotchiCollection";
+import { Food } from "../Food";
 
 export interface Pet{
     name: string;
@@ -26,8 +27,11 @@ export const DEFAULT_PET = {
         face: 0
     }
 }
-
-export function Pet(){
+interface AptogotchiProps{
+  food: Food;
+  setFood: Dispatch<SetStateAction<Food | undefined>>;
+}
+export function Pet({ food, setFood }: AptogotchiProps){
     const { pet, setPet } = usePet();
     const [selectedAction, setSelectedAction] = useState<PetAction>("play")
     return (
@@ -39,12 +43,13 @@ export function Pet(){
               petParts={pet?.parts}
               avatarStyle
             />
-            <PetDetails />
+            <PetDetails food={food} setFood={setFood}/>
           </div>
           <div className="flex flex-col gap-2 sm:gap-8 sm:w-[680px] h-full">
             <Actions
               selectedAction={selectedAction}
               setSelectedAction={setSelectedAction}
+              setFood={setFood}
             />
             <Summary />
           </div>

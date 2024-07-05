@@ -4,6 +4,18 @@ export const ABI = {
     "friends": [],
     "exposed_functions": [
       {
+        "name": "create_accessory",
+        "visibility": "public",
+        "is_entry": true,
+        "is_view": false,
+        "generic_type_params": [],
+        "params": [
+          "&signer",
+          "0x1::string::String"
+        ],
+        "return": []
+      },
+      {
         "name": "create_aptogotchi",
         "visibility": "public",
         "is_entry": true,
@@ -106,9 +118,65 @@ export const ABI = {
           "0x1::string::String"
         ],
         "return": []
+      },
+      {
+        "name": "set_parts",
+        "visibility": "public",
+        "is_entry": true,
+        "is_view": false,
+        "generic_type_params": [],
+        "params": [
+          "&signer",
+          "u8",
+          "u8",
+          "u8"
+        ],
+        "return": []
+      },
+      {
+        "name": "unwear_accessory",
+        "visibility": "public",
+        "is_entry": true,
+        "is_view": false,
+        "generic_type_params": [],
+        "params": [
+          "&signer",
+          "0x1::string::String"
+        ],
+        "return": []
+      },
+      {
+        "name": "wear_accessory",
+        "visibility": "public",
+        "is_entry": true,
+        "is_view": false,
+        "generic_type_params": [],
+        "params": [
+          "&signer",
+          "0x1::string::String"
+        ],
+        "return": []
       }
     ],
     "structs": [
+      {
+        "name": "Accessory",
+        "is_native": false,
+        "abilities": [
+          "key"
+        ],
+        "generic_type_params": [],
+        "fields": [
+          {
+            "name": "category",
+            "type": "0x1::string::String"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      },
       {
         "name": "AptoGotchi",
         "is_native": false,

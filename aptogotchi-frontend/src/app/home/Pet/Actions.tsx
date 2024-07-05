@@ -2,18 +2,20 @@
 
 import { usePet } from "@/context/PetContext";
 import { ABI } from "@/utils/abi";
-import { NEXT_PUBLIC_ENERGY_CAP, NEXT_PUBLIC_ENERGY_DECREASE, NEXT_PUBLIC_ENERGY_INCREASE } from "@/utils/env";
+import { NEXT_PUBLIC_ENERGY_CAP, NEXT_PUBLIC_ENERGY_DECREASE, NEXT_PUBLIC_ENERGY_INCREASE, NEXT_PUBLIC_FOOD_INCREASE } from "@/utils/env";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { getAptosClient } from "@/utils/aptosClient";
-export type PetAction = "feed" | "play"
+import { Food } from "../Food";
+export type PetAction = "feed" | "play" | "buy_food"
 export interface ActionProps {
     selectedAction: PetAction,
-    setSelectedAction: (action: PetAction) => void
+    setSelectedAction: (action: PetAction) => void,
+    setFood: Dispatch<SetStateAction<Food | undefined>>
 }
 const aptosClient = getAptosClient()
-export function Actions({ selectedAction, setSelectedAction }: ActionProps) {
+export function Actions({ selectedAction, setSelectedAction, setFood }: ActionProps) {
     const { pet, setPet } = usePet();
     const [transactionInProgress, setTransactionInProgress] = useState(false);
     const feedDisabled = selectedAction === "feed" && pet?.energy_points === Number(NEXT_PUBLIC_ENERGY_CAP);
@@ -26,6 +28,9 @@ export function Actions({ selectedAction, setSelectedAction }: ActionProps) {
                 break;
             case "play":
                 handlePlay();
+                break;
+            case "buy_food":
+                handleBuyFood();
                 break;
         }
     }
@@ -97,6 +102,31 @@ export function Actions({ selectedAction, setSelectedAction }: ActionProps) {
         }
     }
 
+    const handleBuyFood = async () => {
+        if (!account || !network) return;
+        setTransactionInProgress(true)
+        try {
+            const response = await signAndSubmitTransaction({
+                sender: account.address,
+                data: {
+                    function: `${ABI.address}::main::buy_food`,
+                    functionArguments: [NEXT_PUBLIC_FOOD_INCREASE]
+                }
+            });
+            await aptosClient.waitForTransaction({ transactionHash: response.hash });
+            setFood((food)=>{
+                if(!food) return food;
+                return {
+                    ...food,
+                    number: food.number - Number(NEXT_PUBLIC_FOOD_INCREASE)
+                }
+            })
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setTransactionInProgress(false)
+        }
+    }
     return (
         <div className="nes-container with-title flex-1 bg-white h-[320px]">
             <p className="title">Actions</p>
@@ -122,6 +152,16 @@ export function Actions({ selectedAction, setSelectedAction }: ActionProps) {
                         />
                         <span>Feed</span>
                     </label>
+                    <label>
+                        <input
+                            type="radio"
+                            className="nes-radio"
+                            name="action"
+                            checked={selectedAction === "buy_food"}
+                            onChange={() => setSelectedAction("buy_food")}
+                        />
+                        <span>Buy Food</span>
+                    </label>
                 </div>
                 <div className="flex flex-col gap-4 justify-between">
                     <p>{actionDescriptions[selectedAction]}</p>
@@ -142,5 +182,6 @@ export function Actions({ selectedAction, setSelectedAction }: ActionProps) {
 
 const actionDescriptions: Record<PetAction, string> = {
     feed: "Feeding your pet will boost its Energy Points...",
-    play: "Playing with your pet will make it happy and consume its Energy Points..."
+    play: "Playing with your pet will make it happy and consume its Energy Points...",
+    buy_food: "Buying food for your pet..."
 }
